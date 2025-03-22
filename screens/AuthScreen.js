@@ -39,6 +39,8 @@ const AuthScreen = ({ navigation }) => {
           value={email} 
           onChangeText={setEmail} 
           style={styles.input} 
+
+          
           returnKeyType="next" // iOS will show a "next" button for multiple inputs
           onSubmitEditing={() => passwordInputRef.current.focus()} // Focus next field
         />
