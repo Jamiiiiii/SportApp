@@ -30,60 +30,36 @@ export const auth = getAuth(app);
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function TabNavigator() {
+const TabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName="Welcome"
-      screenOptions={{
-        tabBarStyle: { paddingBottom: 10, height: 60 },
-        tabBarLabelStyle: { fontSize: 12 },
-        tabBarActiveTintColor: 'tomato', // Customize active tab color
-        tabBarInactiveTintColor: 'gray', // Customize inactive tab color
-      }}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Welcome') {
+            iconName = focused ? 'list-outline' : 'list-outline'; // Correct icon names
+          } else if (route.name === 'Create Workout') {
+            iconName = focused ? 'add-outline' : 'add-outline'; // Correct icon names
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'options-outline' : 'options-outline'; // Correct icon names
+          } else if (route.name === 'Workout History') {
+            iconName = focused ? 'calendar-outline' : 'calendar-outline'; // Correct icon names
+          }
+
+          // Return the icon component
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
     >
-      <Tab.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-home" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-settings" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="WorkoutHistory"
-        component={WorkoutHistoryScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-time" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="CreateWorkout"
-        component={CreateWorkoutScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-add-circle" size={size} color={color} />
-          ),
-        }}
-      />
+      <Tab.Screen name="Welcome" component={WelcomeScreen} />
+      <Tab.Screen name="Create Workout" component={CreateWorkoutScreen} />
+      <Tab.Screen name="Workout History" component={WorkoutHistoryScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
-}
+};
 
 export default function SportsApp() {
   return (
