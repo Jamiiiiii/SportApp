@@ -4,12 +4,11 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 20,
   },
   input: {
@@ -23,25 +22,45 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent background
   },
-  modalContent: {
+  sportModalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  dateModalContent: {
+    width: '80%',
     backgroundColor: 'black',
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    width: '80%', // Ensure content width
+  },
+  sportOption: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    alignItems: 'center',
+  },
+  sportOptionText: {
+    fontSize: 18,
+  },
+  selectedSport: {
+    backgroundColor: '#007BFF', 
+    color: 'white',
   },
   confirmButton: {
-    marginTop: 10,
-    backgroundColor: '#007bff',
+    backgroundColor: '#007BFF',
     padding: 10,
     borderRadius: 5,
+    marginTop: 10,
     alignItems: 'center',
-    width: '100%', // Ensure button spans modal width
   },
   confirmButtonText: {
     color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
