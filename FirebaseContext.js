@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-import { auth } from './firebaseConfig';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth } from "./firebaseConfig";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 const FirebaseContext = createContext();
 
@@ -15,12 +20,22 @@ export const FirebaseProvider = ({ children }) => {
   }, []);
 
   // Email & Password Authentication
-  const register = (email, password) => createUserWithEmailAndPassword(auth, email, password);
-  const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  const register = (email, password) =>
+    createUserWithEmailAndPassword(auth, email, password);
+  const login = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password);
   const logout = () => signOut(auth);
 
   return (
-    <FirebaseContext.Provider value={{ user, register, login, logout, googleLogin: () => promptAsync() }}>
+    <FirebaseContext.Provider
+      value={{
+        user,
+        register,
+        login,
+        logout,
+        googleLogin: () => promptAsync(),
+      }}
+    >
       {children}
     </FirebaseContext.Provider>
   );
