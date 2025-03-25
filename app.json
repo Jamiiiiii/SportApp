@@ -13,7 +13,7 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "bundleIdentifier": "com.yourname.sportapp",
+      "bundleIdentifier": "com.Jami.sportapp",
       "googleServicesFile": "./google-services.json",
       "supportsTablet": true
     },
