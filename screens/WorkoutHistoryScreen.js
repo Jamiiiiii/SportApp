@@ -34,7 +34,6 @@ const WorkoutHistoryScreen = () => {
   // Group workouts by week of the year and count occurrences
   const groupWorkoutsByWeek = () => {
     const weeks = {};
-
     workouts.forEach((workout) => {
       const workoutDate = new Date(workout.date);
       const weekNumber = getWeekNumber(workoutDate);
@@ -57,7 +56,8 @@ const WorkoutHistoryScreen = () => {
   };
 
   const weeks = groupWorkoutsByWeek();
-  const allWeeks = Array.from({ length: 52 }, (_, i) => i + 1); // Generate weeks from 1 to 52
+  const currentWeek = getWeekNumber(new Date()); // Get the current week number
+  const allWeeks = Array.from({ length: currentWeek }, (_, i) => i + 1); // Generate weeks from 1 to current week
 
   return (
     <ScrollView style={styles.container}>
@@ -67,7 +67,7 @@ const WorkoutHistoryScreen = () => {
         return (
           <View key={week} style={styles.weekContainer}>
             <Text style={styles.weekTitle}>Week {week}</Text>
-            {Object.entries(workoutsForWeek).length > 0 ? (
+            {Object.keys(workoutsForWeek).length > 0 ? (
               Object.entries(workoutsForWeek).map(([sport, count]) => (
                 <Text key={sport} style={styles.itemText}>{`${count}x ${sport}`}</Text>
               ))
