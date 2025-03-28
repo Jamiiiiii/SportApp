@@ -85,18 +85,18 @@ const WorkoutHistoryScreen = () => {
     return weeks;
   };
 
-  // Group workouts by month
+// Group workouts by month
 const groupWorkoutsByMonth = () => {
   const months = {};
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth(); // 0-based index
 
-   // List of month names
-   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June', 
+  // List of month names
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
-  
+
   workouts.forEach((workout) => {
     const workoutDate = new Date(workout.date);
     const workoutYear = workoutDate.getFullYear();
@@ -104,29 +104,36 @@ const groupWorkoutsByMonth = () => {
 
     // Only include workouts from this year up to the current month
     if (workoutYear === currentYear && workoutMonth <= currentMonth) {
-      const { key, label } = getMonthYear(workoutDate);  // Use existing getMonthYear function
+      const monthKey = `${workoutYear}-${workoutMonth + 1}`; // Key format: "2025-1"
 
-      if (!months[key]) {
-        months[key] = { label, count: 0 };
+      if (!months[monthKey]) {
+        months[monthKey] = {
+          label: `${monthNames[workoutMonth]} ${workoutYear}`, // Label in format "January 2025"
+          count: 0
+        };
       }
 
-      months[key].count += 1;
+      months[monthKey].count += 1;
     }
   });
 
-   // Sort months in the correct order (from January to December)
-   const sortedMonths = Object.entries(months).sort((a, b) => {
-    return monthNames.indexOf(a[0]) - monthNames.indexOf(b[0]);
+  // Sort months in the correct order (from January to December)
+  const sortedMonths = Object.entries(months).sort((a, b) => {
+    const [keyA] = a;
+    const [keyB] = b;
+    return keyA.localeCompare(keyB); // Sort by "YYYY-M" key
   });
 
   // Return the sorted months with their counts
-  const sortedMonthData = sortedMonths.reduce((acc, [month, count]) => {
-    acc[month] = count;
+  const sortedMonthData = sortedMonths.reduce((acc, [monthKey, data]) => {
+    acc[monthKey] = data;
     return acc;
   }, {});
 
   return sortedMonthData;
 };
+
+
 
   // Group workouts by year
   const groupWorkoutsByYear = () => {
@@ -225,13 +232,13 @@ const groupWorkoutsByMonth = () => {
             );
           })}
 
-        {viewMode === "month" &&
-          Object.values(months).map(({ label, count }) => (
-            <View key={label} style={styles.weekContainer}>
-              <Text style={styles.weekTitle}>{label}</Text>
-              <Text style={styles.itemText}>{`${count} workouts`}</Text>
-            </View>
-          ))}
+{viewMode === "month" &&
+  Object.entries(months).map(([monthKey, { label, count }]) => (
+    <View key={monthKey} style={styles.weekContainer}>
+      <Text style={styles.weekTitle}>{label}</Text>  
+      <Text style={styles.itemText}>{`${count} workouts`}</Text>
+    </View>
+  ))}
 
         {viewMode === "year" &&
           allYears.map((year) => (
