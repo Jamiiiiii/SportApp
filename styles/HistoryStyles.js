@@ -5,28 +5,53 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    padding: 16,
+  },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  item: {
-    padding: 10,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  itemText: {
-    fontSize: 18,
-  },
-  weekContainer: {
-    marginBottom: 20,
-  },
-  weekTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: 'white',
   },
-  });
-  
-  export default styles;
+  filterButton: {
+    padding: 8,
+    borderRadius: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  dropdown: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    width: 150,
+    alignItems: 'center',
+  },
+  dropdownItem: {
+    padding: 10,
+    fontSize: 16,
+    color: 'black',
+  },
+  weekContainer: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 5,
+  },
+  weekTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  itemText: {
+    fontSize: 16,
+  },
+});
+
+export default styles;
