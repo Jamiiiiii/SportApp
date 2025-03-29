@@ -21,12 +21,19 @@ const WorkoutHistoryScreen = () => {
   const [workouts, setWorkouts] = useState([]);
   const [viewMode, setViewMode] = useState("week");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editedWorkouts, setEditedWorkouts] = useState({});
+  const [dropdownVisible, setDropdownVisible] = useState(null);
 
   // Fetch workouts from Firestore
   const fetchWorkouts = async () => {
     const workoutsRef = collection(db, "workouts");
     const querySnapshot = await getDocs(workoutsRef);
-    const workoutsData = querySnapshot.docs.map((doc) => doc.data());
+    const workoutsData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     setWorkouts(workoutsData);
   };
@@ -56,6 +63,61 @@ const WorkoutHistoryScreen = () => {
     });
 
     return weeks;
+  };
+
+  const weeks = groupWorkoutsByWeek();
+  const currentWeek = getWeekNumber(new Date());
+  const allWeeks = Array.from({ length: currentWeek }, (_, i) => i + 1);
+
+  const openEditModal = (week) => {
+    setSelectedWeek(week);
+    setEditedWorkouts({ ...weeks[week] });
+    setModalVisible(true);
+    setDropdownVisible(null);
+  };
+
+  const handleEditWorkout = (sport, change) => {
+    setEditedWorkouts((prev) => {
+      const updatedCount = (prev[sport] || 0) + change;
+      if (updatedCount <= 0) {
+        const { [sport]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [sport]: updatedCount };
+    });
+  };
+
+  const saveWorkoutChanges = async () => {
+    // Update Firestore based on changes
+    const selectedWeekWorkouts = workouts.filter(
+      (workout) => getWeekNumber(new Date(workout.date)) === selectedWeek
+    );
+
+    for (const [sport, count] of Object.entries(editedWorkouts)) {
+      const existingWorkouts = selectedWeekWorkouts.filter(
+        (workout) => workout.sport?.trim().toLowerCase() === sport
+      );
+
+      const difference = count - existingWorkouts.length;
+
+      if (difference > 0) {
+        for (let i = 0; i < difference; i++) {
+          await addDoc(collection(db, "workouts"), {
+            sport,
+            date: new Date().toISOString(),
+          });
+        }
+      } else if (difference < 0) {
+        for (let i = 0; i < Math.abs(difference); i++) {
+          if (existingWorkouts[i]) {
+            await deleteDoc(doc(db, "workouts", existingWorkouts[i].id));
+          }
+        }
+      }
+    }
+
+    await fetchWorkouts();
+    setModalVisible(false);
   };
 
   // Group workouts by month
@@ -133,11 +195,8 @@ const WorkoutHistoryScreen = () => {
     return years;
   };
 
-  const weeks = groupWorkoutsByWeek();
   const months = groupWorkoutsByMonth();
   const years = groupWorkoutsByYear();
-  const currentWeek = getWeekNumber(new Date());
-  const allWeeks = Array.from({ length: currentWeek }, (_, i) => i + 1);
   const allYears = Object.keys(years).sort();
 
   return (
@@ -196,21 +255,58 @@ const WorkoutHistoryScreen = () => {
           allWeeks.map((week) => {
             const workoutsForWeek = weeks[week] || {};
             return (
+
               <View key={week} style={styles.weekContainer}>
+                <View style={styles.weekHeader}>
                 <Text style={styles.weekTitle}>Week {week}</Text>
+                <TouchableOpacity onPress={() => setDropdownVisible(week)}>
+                  <Ionicons style ={styles.Ionithreedots} name="ellipsis-vertical" size={24} color="black" />
+                </TouchableOpacity>
+                </View>
+
                 {Object.keys(workoutsForWeek).length > 0 ? (
                   Object.entries(workoutsForWeek).map(([sport, count]) => (
-                    <Text
-                      key={sport}
-                      style={styles.itemText}
-                    >{`${count}x ${sport}`}</Text>
+                    <Text key={sport} style={styles.itemText}>
+                      {`${count}x ${sport}`}
+                    </Text>
                   ))
                 ) : (
                   <Text style={styles.itemText}>No workouts</Text>
                 )}
+                
+                {dropdownVisible === week && (
+                  <View style={styles.editDropdown}>
+                    <TouchableOpacity onPress={() => openEditModal(week)}>
+                      <Text style={styles.editDropdownText}>Edit</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             );
           })}
+
+      {/* Edit Modal */}
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.editModal}>
+            <Text style={styles.editTitle}>Edit Week {selectedWeek}</Text>
+            {Object.entries(editedWorkouts).map(([sport, count]) => (
+              <View key={sport} style={styles.editRow}>
+                <TouchableOpacity onPress={() => handleEditWorkout(sport, -1)}>
+                  <Text style={styles.modalButtonMinus}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.modalText}>{`${count}x ${sport}`}</Text>
+                <TouchableOpacity onPress={() => handleEditWorkout(sport, 1)}>
+                  <Text style={styles.modalButtonPlus}>+</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <TouchableOpacity onPress={saveWorkoutChanges} style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
         {viewMode === "month" &&
           Object.entries(months).map(([monthKey, { label, count }]) => (
